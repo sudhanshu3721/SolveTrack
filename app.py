@@ -1,28 +1,27 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
-import os
+from werkzeug.security import check_password_hash, generate_password_hash
 
-# ----------------- App Setup -----------------
+# ----------------- Flask Setup -----------------
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "dev-secret")
-
-# Use /tmp folder for SQLite on Render
-db_path = os.path.join("/tmp", "solvetrack.db")
-app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///dsa.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = "supersecretkey123"
 db = SQLAlchemy(app)
 
 # ----------------- Models -----------------
 class User(db.Model):
+    __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(200), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
-    dsa_problems = db.relationship('DSA', backref='User', lazy=True)
+    dsa_problems = db.relationship('DSA', backref='user', lazy=True)
+
 
 class DSA(db.Model):
+    __tablename__ = "dsa"
     sno = db.Column(db.Integer, primary_key=True)
     problem_name = db.Column(db.String(200), nullable=False)
     description = db.Column(db.String(500), nullable=False)
@@ -34,7 +33,7 @@ class DSA(db.Model):
     def __repr__(self):
         return f"{self.sno} - {self.problem_name} - {self.difficulty}"
 
-# ----------------- Helpers -----------------
+# ----------------- Login Required Decorator -----------------
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -87,7 +86,7 @@ def logout():
     session.pop('user_id', None)
     return redirect(url_for('login'))
 
-@app.route("/add", methods=['GET', 'POST'])
+@app.route("/add", methods=['GET','POST'])
 @login_required
 def add():
     if request.method == 'POST':
@@ -96,7 +95,7 @@ def add():
             description=request.form['description'],
             difficulty=request.form['difficulty'],
             link=request.form['link'],
-            date_solved=request.form.get('date') or None,
+            date_solved=request.form['date'] or None,
             user_id=session['user_id']
         )
         db.session.add(prob)
@@ -104,7 +103,7 @@ def add():
         return redirect("/dashboard")
     return render_template("add.html")
 
-@app.route("/update/<int:sno>", methods=['GET', 'POST'])
+@app.route("/update/<int:sno>", methods=['GET','POST'])
 @login_required
 def update(sno):
     prob = DSA.query.filter_by(sno=sno, user_id=session['user_id']).first()
@@ -115,7 +114,7 @@ def update(sno):
         prob.description = request.form['description']
         prob.difficulty = request.form['difficulty']
         prob.link = request.form['link']
-        date_solved = request.form.get('date_solved')
+        date_solved = request.form['date_solved']
         if date_solved:
             prob.date_solved = datetime.strptime(date_solved, "%Y-%m-%d")
         db.session.commit()
@@ -132,9 +131,8 @@ def delete(sno):
     db.session.commit()
     return redirect("/dashboard")
 
-# ----------------- Main -----------------
+# ----------------- Run App -----------------
 if __name__ == "__main__":
-    # Create all tables on startup
     with app.app_context():
-        db.create_all()
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+        db.create_all()  # ✅ Create tables if not exist
+    app.run(debug=True)
