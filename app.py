@@ -1,30 +1,27 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import requests
-from functools import wraps
 from werkzeug.security import check_password_hash, generate_password_hash
+from functools import wraps
 import os
 
+# ----------------- App Setup -----------------
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret")
 
-# SQLite path in Render's writable folder
+# Use /tmp folder for SQLite on Render
 db_path = os.path.join("/tmp", "solvetrack.db")
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+# ----------------- Models -----------------
 class User(db.Model):
-    id = db.Column(db.Integer,primary_key=True)
-    email = db.Column(db.String(200),unique = True,nullable=False)
-    password = db.Column(db.String(200),nullable=False)
-    dsa_problems = db.relationship('DSA',backref='User',lazy=True)
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(200), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+    dsa_problems = db.relationship('DSA', backref='User', lazy=True)
 
-
-
-# Database model
 class DSA(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
     problem_name = db.Column(db.String(200), nullable=False)
@@ -34,12 +31,10 @@ class DSA(db.Model):
     date_solved = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    
-
     def __repr__(self):
         return f"{self.sno} - {self.problem_name} - {self.difficulty}"
-    
 
+# ----------------- Helpers -----------------
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -48,8 +43,7 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# Routes
-
+# ----------------- Routes -----------------
 @app.route("/", methods=['GET'])
 def home():
     return redirect(url_for('register'))
@@ -61,9 +55,7 @@ def dashboard():
     alldsa = DSA.query.filter_by(user_id=user_id).all()
     return render_template("index.html", alldsa=alldsa)
 
-    
-
-@app.route("/register",methods=['GET','POST'])
+@app.route("/register", methods=['GET','POST'])
 def register():
     if request.method == 'POST':
         email = request.form['email']
@@ -71,18 +63,17 @@ def register():
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             return render_template('register.html', error="Email already taken")
-        new_user = User(email=email,password=password)
+        new_user = User(email=email, password=password)
         db.session.add(new_user)
         db.session.commit()
         return redirect(url_for('login'))
     return render_template("register.html")
 
-@app.route('/login',methods=['GET','POST'])
+@app.route('/login', methods=['GET','POST'])
 def login():
-    if request.method=='POST':
+    if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        user = User.query.filter_by(email=email).first()
         user = User.query.filter_by(email=email).first()
         if user and check_password_hash(user.password, password):
             session['user_id'] = user.id
@@ -93,22 +84,19 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.pop('user_id',None)
+    session.pop('user_id', None)
     return redirect(url_for('login'))
-        
-
 
 @app.route("/add", methods=['GET', 'POST'])
 @login_required
 def add():
-    
     if request.method == 'POST':
         prob = DSA(
             problem_name=request.form['problem_name'],
             description=request.form['description'],
             difficulty=request.form['difficulty'],
             link=request.form['link'],
-            date_solved=request.form['date'] or None,
+            date_solved=request.form.get('date') or None,
             user_id=session['user_id']
         )
         db.session.add(prob)
@@ -119,19 +107,17 @@ def add():
 @app.route("/update/<int:sno>", methods=['GET', 'POST'])
 @login_required
 def update(sno):
-    prob = DSA.query.filter_by(sno=sno, user_id=session['user_id']).first()  # ensure user owns it
+    prob = DSA.query.filter_by(sno=sno, user_id=session['user_id']).first()
     if not prob:
         return "Unauthorized or Not Found", 403
-    
     if request.method == 'POST':
         prob.problem_name = request.form['problem_name']
         prob.description = request.form['description']
         prob.difficulty = request.form['difficulty']
         prob.link = request.form['link']
-        date_solved = request.form['date_solved']
+        date_solved = request.form.get('date_solved')
         if date_solved:
             prob.date_solved = datetime.strptime(date_solved, "%Y-%m-%d")
-        prob.user_id = session['user_id']
         db.session.commit()
         return redirect("/dashboard")
     return render_template("update.html", prob=prob)
@@ -142,12 +128,13 @@ def delete(sno):
     prob = DSA.query.filter_by(sno=sno, user_id=session['user_id']).first()
     if not prob:
         return "Unauthorized or Not Found", 403
-    
     db.session.delete(prob)
     db.session.commit()
     return redirect("/dashboard")
 
+# ----------------- Main -----------------
 if __name__ == "__main__":
+    # Create all tables on startup
     with app.app_context():
-        db.create_all()  # ✅ Ensures tables are created each time app starts
+        db.create_all()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
