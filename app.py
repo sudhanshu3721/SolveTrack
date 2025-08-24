@@ -4,18 +4,15 @@ from datetime import datetime
 import requests
 from functools import wraps
 from werkzeug.security import check_password_hash, generate_password_hash
+import os
 
 
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret")
 
-# DB URL – default to SQLite for local, can switch to Postgres on Render later
-db_url = os.environ.get("DATABASE_URL", "sqlite:///dsa.db")
-# Render/Heroku sometimes use postgres://; SQLAlchemy expects postgresql://
-if db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql://", 1)
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///dsa.db"
+# ✅ Use SQLite inside /tmp/ (works on Render)
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////tmp/dsa.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 app.secret_key = "supersecretkey123"  
@@ -153,5 +150,5 @@ def delete(sno):
 
 if __name__ == "__main__":
     with app.app_context():
-        db.create_all()
-    app.run(debug=True)
+        db.create_all()  # ✅ Ensures tables are created each time app starts
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
