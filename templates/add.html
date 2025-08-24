@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Problem</title>
+  <style>
+    header{
+      background: #2c3e50;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+      color: #444;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    textarea {
+      resize: none;
+      height: 80px;
+    }
+
+    .btn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #0056b3;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 15px;
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<header>
+    <h1>SolveTrack</h1>
+  </header>
+
+<body>
+  <div class="container">
+    <h2>Add New Problem</h2>
+    <!-- Form to create a new problem -->
+    <form method="POST" action="/add">
+      
+      <label for="name">Problem Name</label>
+      <input type="text" id="problem_name" name="problem_name" placeholder="Enter problem name" required>
+
+      <label for="description">Description</label>
+      <textarea id="description" name="description"  placeholder="Enter problem description" required></textarea>
+
+      <label for="difficulty">Difficulty</label>
+      <select id="difficulty" name="difficulty" required>
+        <option value="">--Select Difficulty--</option>
+        <option value="Easy">Easy</option>
+        <option value="Medium">Medium</option>
+        <option value="Hard">Hard</option>
+      </select>
+
+      <label for="link">Problem Link</label>
+      <input type="url" id="link" name="link" placeholder="https://example.com/problem" required>
+
+      <label for="date_solved">Date Solved</label>
+      <input type="date" id="date_solved" name="date">
+
+      
+
+      <button type="submit" class="btn">Add Problem</button>
+    </form>
+    <a href="/" class="back-link">⬅ Back to Dashboard</a>
+  </div>
+</body>
+</html>

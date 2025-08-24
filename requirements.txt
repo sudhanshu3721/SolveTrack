@@ -1,0 +1,9 @@
+Flask==3.0.3
+Flask-JWT-Extended==4.6.0
+Flask-SQLAlchemy==3.1.1
+mysql-connector-python==9.0.0   # if you are using MySQL
+PyMySQL==1.1.1                  # optional, another MySQL driver
+Werkzeug==3.0.3
+Jinja2==3.1.4
+python-dotenv==1.0.1 
+gunicorn           # for environment variables (optional but recommended)

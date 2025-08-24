@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SolveTrack - Login</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 350px;
+        }
+
+        .login-container h2 {
+            margin-bottom: 25px;
+            font-size: 26px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .login-container input:focus {
+            outline: none;
+            border-color: #6e8efb;
+            box-shadow: 0 0 5px rgba(110, 142, 251, 0.5);
+        }
+
+        .login-container input[type="submit"] {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: #fff;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .login-container input[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(110, 142, 251, 0.4);
+        }
+
+        .login-container a {
+            display: inline-block;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #6e8efb;
+            font-weight: 600;
+            transition: 0.3s ease;
+        }
+
+        .login-container a:hover {
+            color: #a777e3;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>🧩SolveTrack </h2>
+        <h2> Login </h2>
+        <form method="POST" action="{{ url_for('login') }}">
+            <input type="email" name="email" placeholder="Enter your email" required>
+            <input type="password" name="password" placeholder="Enter your password" required>
+            <input type="submit" value="Login">
+            {% if error %}
+                <p class="error">{{ error }}</p>
+            {% endif %}
+        </form>
+        <a href="{{ url_for('register') }}">Don't have an account? Register</a>
+    </div>
+</body>
+</html>

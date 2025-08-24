@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSA Tracker Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #2c3e50;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    .logout-btn {
+      background: #e74c3c;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #c0392b;
+    }
+
+    .container {
+      width: 90%;
+      margin: 20px auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background: #34495e;
+      color: white;
+    }
+
+    tr:hover {
+      background: #f1f1f1;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 2px;
+      text-decoration: none;
+    }
+
+    .btn-update {
+      background-color: #27ae60;
+      color: white;
+    }
+
+    .btn-update:hover {
+      background-color: #219150;
+    }
+
+    .btn-delete {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background-color: #c0392b;
+    }
+
+    .add-problem {
+      display: block;
+      margin: 15px 0;
+      padding: 10px 15px;
+      background: #2980b9;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .add-problem:hover {
+      background: #21618c;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SolveTrack</h1>
+    <a href="{{ url_for('logout') }}" class="logout-btn">🚪 Logout</a>
+  </header>
+
+  <div class="container">
+    <a href="/add" class="add-problem">+ Add New Problem</a>
+    <table>
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Problem Name</th>
+          <th>Description</th>
+          <th>Difficulty</th>
+          <th>Link</th>
+          <th>Date Solved</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for prob in alldsa %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ prob.problem_name }}</td>
+          <td>{{ prob.description }}</td>
+          <td>{{ prob.difficulty }}</td>
+          <td><a href="{{ prob.link }}" target="_blank">View</a></td>
+          <td>{{ prob.date_solved.strftime('%Y-%m-%d') if prob.date_solved else "Not Provided" }}</td>
+          <td>
+            <a href="{{ url_for('update', sno=prob.sno) }}" class="btn btn-update">✏️ Update</a>
+            <a href="{{ url_for('delete', sno=prob.sno) }}" class="btn btn-delete">🗑️ Delete</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7">No problems added yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

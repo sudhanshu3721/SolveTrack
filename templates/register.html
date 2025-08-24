@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SolveTrack | Register</title>
+    <style>
+        /* Background */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        /* Card */
+        .register-container {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
+            width: 350px;
+            text-align: center;
+        }
+
+        .register-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* Input fields */
+        .register-container input[type="email"],
+        .register-container input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .register-container input[type="email"]:focus,
+        .register-container input[type="password"]:focus {
+            border-color: #2575fc;
+        }
+
+        /* Submit button */
+        .register-container input[type="submit"] {
+            width: 100%;
+            background: #2575fc;
+            color: white;
+            border: none;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .register-container input[type="submit"]:hover {
+            background: #1a5ed9;
+        }
+
+        /* Login link */
+        .register-container .login-link {
+            margin-top: 15px;
+            display: block;
+            color: #2575fc;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .register-container .login-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Branding */
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2575fc;
+            margin-bottom: 10px;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo">🧩 SolveTrack</div>
+        <h2>Create Account</h2>
+        <form method="POST" action="{{ url_for('register') }}">
+            <input type="email" name="email" placeholder="Enter your email" required>
+            <input type="password" name="password" placeholder="Enter your password" required>
+            <input type="submit" value="Register">
+            {% if error %}
+                <p class="error">{{ error }}</p>
+            {% endif %}
+        </form>
+        <a href="{{ url_for('login') }}" class="login-link">Already have an account? Login</a>
+    </div>
+</body>
+</html>
