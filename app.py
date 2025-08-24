@@ -6,16 +6,15 @@ from functools import wraps
 from werkzeug.security import check_password_hash, generate_password_hash
 import os
 
-
-
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret")
 
-# ✅ Use SQLite inside /tmp/ (works on Render)
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////tmp/dsa.db"
+# SQLite path in Render's writable folder
+db_path = os.path.join("/tmp", "solvetrack.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 db = SQLAlchemy(app)
-app.secret_key = "supersecretkey123"  
 
 class User(db.Model):
     id = db.Column(db.Integer,primary_key=True)
